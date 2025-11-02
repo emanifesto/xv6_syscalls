@@ -1,5 +1,8 @@
 struct stat;
 struct rtcdate;
+typedef struct{
+    
+} lock_t;
 
 // system calls
 int clone(void(*fcn)(void *, void *), void *arg1, void *arg2, void *stack);
