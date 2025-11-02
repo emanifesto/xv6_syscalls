@@ -83,7 +83,7 @@ argstr(int n, char **pp)
 }
 
 extern int sys_chdir(void);
-extern uint sys_clone(void);
+extern int sys_clone(void);
 extern int sys_close(void);
 extern int sys_dup(void);
 extern int sys_exec(void);
@@ -91,7 +91,7 @@ extern int sys_exit(void);
 extern int sys_fork(void);
 extern int sys_fstat(void);
 extern int sys_getpid(void);
-extern uint sys_join(void);
+extern int sys_join(void);
 extern int sys_kill(void);
 extern int sys_link(void);
 extern int sys_mkdir(void);
