@@ -93,11 +93,11 @@ sys_uptime(void)
 int
 sys_clone(void)
 {
-  return clone();
+  return 0;
 }
 
 int
 sys_join(void)
 {
-  return join();
+  return 0;
 }
