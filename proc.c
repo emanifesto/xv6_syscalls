@@ -221,6 +221,65 @@ fork(void)
   return pid;
 }
 
+// Create a new process cloning p as the parent.
+// Sets up instruction pointer and fake return address for function.
+// Caller must set state of returned proc to RUNNABLE.
+int
+clone(void(*fcn) (void *, void *), void *arg1, void *arg2, void *stack)
+{
+  int i, pid;
+  struct proc *np;
+  struct proc *curproc = myproc();
+
+  // Allocate process.
+  if((np = allocproc()) == 0){
+    return -1;
+  }
+
+  np->pgdir = curproc->pgdir;
+  np->userstack = stack;
+  np->sz = curproc->sz;
+  np->parent = curproc;
+  *np->tf = *curproc->tf;
+
+  // Clear %eax so that clone returns 0 in the child.
+  np->tf->eax = 0;
+
+  np->tf->eip = (uint)fcn;
+
+  uint ustack[2];
+  uint sp = (uint)stack + PGSIZE; // Top of the stack page
+
+  sp -= 4;  // Decrement stack pointer for the argument
+  ustack[1] = (uint)arg1;  //The argument for fcn
+
+  sp -= 4;  // Decrement for the fake return address
+  ustack[0] = 0xffffffff;
+
+  //Copy these two values from kernel to the user stack
+  copyout(np->pgdir, sp, ustack, 8);
+
+  // Set the new thread's stack pointer
+  np->tf->esp = sp;
+
+  for(i = 0; i < NOFILE; i++)
+    if(curproc->ofile[i])
+      np->ofile[i] = filedup(curproc->ofile[i]);
+  np->cwd = idup(curproc->cwd);
+
+  safestrcpy(np->name, curproc->name, sizeof(curproc->name));
+
+  pid = np->pid;
+
+  acquire(&ptable.lock);
+
+  np->state = RUNNABLE;
+
+  release(&ptable.lock);
+
+  return pid;
+}
+
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
