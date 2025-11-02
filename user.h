@@ -2,6 +2,8 @@ struct stat;
 struct rtcdate;
 
 // system calls
+int clone(void(*fcn)(void *, void *), void *arg1, void *arg2, void *stack);
+int join(void **stack);
 int fork(void);
 int exit(void) __attribute__((noreturn));
 int wait(void);
@@ -25,6 +27,11 @@ int sleep(int);
 int uptime(void);
 
 // ulib.c
+int thread_create(void (*start_routine)(void *, void *), void *arg1, void *arg2);
+int thread_join(void);
+void lock_init(lock_t *);
+void lock_acquire(lock_t *);
+void lock_release(lock_t *);
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
 void *memmove(void*, const void*, int);
