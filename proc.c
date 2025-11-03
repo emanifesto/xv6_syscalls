@@ -431,8 +431,11 @@ join(void)
 
       uint sp = (uint)p->userstack + PGSIZE; // Top of the stack page
       // Returns the user stack pointer of the cloned process
-      if(copyout(p->pgdir, sp, p->userstack, (uint)sizeof(p->userstack)) < 0) return -1;
-      
+      if(copyout(p->pgdir, sp, p->userstack, (uint)sizeof(p->userstack)) < 0){
+        release(&ptable.lock);
+        return -1;
+      }
+
       if(p->state == ZOMBIE){
         // Found one.
         pid = p->pid;
