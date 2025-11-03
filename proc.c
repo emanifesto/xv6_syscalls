@@ -225,7 +225,7 @@ fork(void)
 // Sets up instruction pointer and fake return address for function.
 // Caller must set state of returned proc to RUNNABLE.
 int
-clone(void(*fcn) (void *, void *), void *arg1, void *arg2, void *stack)
+clone(void(*fcn) (void *), void *arg1, void *stack)
 {
   int i, pid;
   struct proc *np;
@@ -236,11 +236,52 @@ clone(void(*fcn) (void *, void *), void *arg1, void *arg2, void *stack)
     return -1;
   }
 
+
+  // allocate a fresh physical page to hold this thread's kernel stack / trapframe
+  char *tfpage = kalloc();
+  if(tfpage == 0){
+    // cleanup allocproc (release np) as in your allocproc failure path
+    // free the kernel stack allocproc gave us and mark UNUSED
+    kfree(np->kstack);
+    np->kstack = 0;
+    np->state = UNUSED;
+    return -1;
+  }
+  memset(tfpage, 0, PGSIZE);
+
   np->pgdir = curproc->pgdir;
   np->userstack = stack;
   np->sz = curproc->sz;
   np->parent = curproc;
-  *np->tf = *curproc->tf;
+
+  // copy trapframe into the new physical page (kernel copy)
+  // compute kernel-side trapframe address in tfpage
+  struct trapframe *k_tf = (struct trapframe*)(tfpage + KSTACKSIZE - sizeof(struct trapframe));
+  *k_tf = *curproc->tf;        // copy parent's registers into tfpage
+
+  // choose a unique kernel VA for this thread's stack/trapframe
+  // KSTACK(pid) should compute a per-pid kernel stack base VA (adjust if your project uses a different macro)
+  uint kstack_va = KSTACK(np->pid);
+
+  // map the newly allocated physical page into the (shared) page table at that unique VA
+  if(mappages(np->pgdir, (char*)kstack_va, PGSIZE, V2P(tfpage), PTE_W|PTE_P) < 0){
+    kfree(tfpage);
+    // cleanup allocproc (release np) as in your allocproc failure path
+    kfree(np->kstack); // free allocproc's original stack if still present
+    np->kstack = 0;
+    np->state = UNUSED;
+    return -1;
+  }
+
+  // record kernel pointer so wait/exit can kfree() the same pointer
+  // keep np->kstack as the kernel pointer returned by kalloc()
+  // (allocproc already set np->kstack; free it and replace with tfpage)
+  if(np->kstack)
+    kfree(np->kstack);
+  np->kstack = tfpage;
+
+  // set trapframe pointer to the VA we mapped
+  np->tf = (struct trapframe*)(kstack_va + KSTACKSIZE - sizeof(struct trapframe));
 
   // Clear %eax so that clone returns 0 in the child.
   np->tf->eax = 0;
@@ -257,7 +298,7 @@ clone(void(*fcn) (void *, void *), void *arg1, void *arg2, void *stack)
   ustack[0] = 0xffffffff;
 
   //Copy these two values from kernel to the user stack
-  copyout(np->pgdir, sp, ustack, 8);
+  if(copyout(np->pgdir, sp, ustack, 8) < 0) return -1;
 
   // Set the new thread's stack pointer
   np->tf->esp = sp;
