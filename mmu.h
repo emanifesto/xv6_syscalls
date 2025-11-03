@@ -1,6 +1,10 @@
 // This file contains definitions for the
 // x86 memory management unit (MMU).
 
+
+// KSTACK definition
+#define KSTACK(pid) (KERNBASE - ((pid + 1) * KSTACKSIZE))
+
 // Eflags register
 #define FL_IF           0x00000200      // Interrupt Enable
 

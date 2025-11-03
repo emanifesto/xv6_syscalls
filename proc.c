@@ -6,6 +6,8 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "vm.c"
+#include "mmu.h"
 
 struct {
   struct spinlock lock;
