@@ -1,9 +1,9 @@
-// #include "types.h"
+#include "types.h"
 #include "stat.h"
 #include "fcntl.h"
 #include "user.h"
 #include "x86.h"
-// #include "mmu.h"
+#include "mmu.h"
 #include "proc.h"
 
 char*
