@@ -455,7 +455,7 @@ join(void **stack)
       uint sp = (uint)stack + PGSIZE; // Top of the stack page
       // Returns the user stack pointer of the cloned process
       if(copyout(p->pgdir, sp, p->userstack, (uint)sizeof(p->userstack)) < 0){
-        cprintf("failed in copyout\n");
+        cprintf("failed in join copyout\n");
         release(&ptable.lock);
         return -1;
       }
