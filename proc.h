@@ -34,6 +34,10 @@ struct context {
 
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
+// system calls
+int clone(void(*fcn)(void *), void *arg1, void *stack);
+int join(void **stack);
+
 // Per-process state
 struct proc {
   uint sz;                     // Size of process memory (bytes)
