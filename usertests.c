@@ -1745,83 +1745,6 @@ rand()
   return randstate;
 }
 
-#define NTHREADS 4
-#define ITERS 5000
-
-static lock_t lk;
-static volatile uint counter;
-
-void
-worker(void *arg)
-{
-  int i;
-  for(i = 0; i < ITERS; i++){
-    lock_acquire(&lk);
-    counter++;
-    lock_release(&lk);
-  }
-  // thread exit: use exit() (your kernel is thread-safe)
-  exit();
-}
-
-void
-thread_counter_test(void){
-  int i;
-  int tid;
-
-  lock_init(&lk);
-  counter = 0;
-
-  for(i = 0; i < NTHREADS; i++){
-    tid = thread_create(worker, (void*)(uint)i);
-    if(tid < 0){
-      printf(1, "thread_create failed\n");
-      exit();
-    }
-  }
-
-  for(i = 0; i < NTHREADS; i++){
-    if(thread_join() < 0){
-      printf(1, "thread_join failed\n");
-      exit();
-    }
-  }
-
-  if(counter != NTHREADS * ITERS){
-    printf(1, "FAIL counter=%d expected=%d\n", counter, NTHREADS * ITERS);
-  } else {
-    printf(1, "PASS counter=%d\n", counter);
-  }
-
-  exit();
-}
-
-void
-child(void *arg)
-{
-  // immediate exit from thread
-  exit();
-}
-
-void
-thread_exit_test(void){
-  int t;
-
-  t = thread_create(child, 0);
-  if(t < 0){
-    printf(1, "thread_create failed\n");
-    exit();
-  }
-
-  if(thread_join() < 0){
-    printf(1, "thread_join failed\n");
-    exit();
-  }
-
-  printf(1, "thread_exit_test PASS\n");
-  exit();
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -1832,9 +1755,6 @@ main(int argc, char *argv[])
     exit();
   }
   close(open("usertests.ran", O_CREATE));
-
-  thread_counter_test();
-  thread_exit_test();
 
   argptest();
   createdelete();
