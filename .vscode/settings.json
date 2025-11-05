@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "fcntl.h": "c",
+        "spinlock.h": "c",
+        "proc.h": "c",
+        "x86.h": "c",
+        "mmu.h": "c"
+    }
+}

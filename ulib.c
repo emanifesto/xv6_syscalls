@@ -3,6 +3,7 @@
 #include "fcntl.h"
 #include "user.h"
 #include "x86.h"
+#include "mmu.h"
 
 char*
 strcpy(char *s, const char *t)
@@ -109,8 +110,15 @@ static inline uint fetch_and_add(volatile uint *addr, uint val){
   return __sync_fetch_and_add((volatile unsigned int *)addr, val);
 }
 
-int thread_create(void (*start_routine)(void *, void *), void *arg1, void *arg2);
-int thread_join(void);
+int thread_create(void (*start_routine)(void *), void *arg1){
+  void *stack = malloc(PGSIZE);
+  return clone(start_routine, arg1, &stack);
+}
+
+int thread_join(void){
+  void *stack;
+  return join(&stack);
+}
 
 void lock_init(lock_t *lock){
   lock->ticket = 0;

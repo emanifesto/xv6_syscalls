@@ -31,7 +31,7 @@ int sleep(int);
 int uptime(void);
 
 // ulib.c
-int thread_create(void (*start_routine)(void *, void *), void *arg1, void *arg2);
+int thread_create(void (*start_routine)(void *), void *arg1);
 int thread_join(void);
 void lock_init(lock_t *);
 void lock_acquire(lock_t *);
