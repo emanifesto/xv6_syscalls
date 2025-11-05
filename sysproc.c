@@ -91,13 +91,13 @@ sys_uptime(void)
 }
 
 int
-sys_clone(void)
+sys_clone(void(*fcn)(void *), void *arg1, void *stack)
 {
-  return clone();
+  return clone(fcn, arg1, stack);
 }
 
 int
-sys_join(void)
+sys_join(void **stack)
 {
-  return join();
+  return join(stack);
 }
