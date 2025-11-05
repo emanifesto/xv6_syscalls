@@ -5,7 +5,9 @@
 #include "x86.h"
 #include "mmu.h"
 #include "proc.h"
-#include "defs.h"
+
+extern void *malloc(uint);
+extern void free(void *);
 
 char*
 strcpy(char *s, const char *t)
