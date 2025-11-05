@@ -4,7 +4,7 @@
 #include "user.h"
 #include "x86.h"
 #include "mmu.h"
-#include "proc.h"
+#include "syscall.h"
 
 char*
 strcpy(char *s, const char *t)
@@ -113,12 +113,12 @@ static inline uint fetch_and_add(volatile uint *addr, uint val){
 
 int thread_create(void (*start_routine)(void *), void *arg1){
   void *stack = malloc(PGSIZE);
-  return clone(start_routine, arg1, &stack);
+  return sys_clone(start_routine, arg1, &stack);
 }
 
 int thread_join(void){
   void *stack;
-  return join(&stack);
+  return sys_join(&stack);
 }
 
 void lock_init(lock_t *lock){
