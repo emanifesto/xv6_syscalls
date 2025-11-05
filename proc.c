@@ -244,7 +244,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
 
   // Allocate process.
   if((np = allocproc()) == 0){
-    cprinft("failed in alloc\n");
+    cprintf("failed in alloc\n");
     return -1;
   }
 
