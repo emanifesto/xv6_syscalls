@@ -414,7 +414,7 @@ wait(void)
 // Wait for a cloned process to exit and return its pid.
 // Return -1 if this process has no clones.
 int
-join(void)
+join(void **stack)
 {
   struct proc *p;
   struct proc *p2;
@@ -430,7 +430,7 @@ join(void)
         continue;
       havekids = 1;
 
-      uint sp = (uint)p->userstack + PGSIZE; // Top of the stack page
+      uint sp = (uint)stack + PGSIZE; // Top of the stack page
       // Returns the user stack pointer of the cloned process
       if(copyout(p->pgdir, sp, p->userstack, (uint)sizeof(p->userstack)) < 0){
         release(&ptable.lock);
