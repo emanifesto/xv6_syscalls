@@ -4,6 +4,7 @@
         "spinlock.h": "c",
         "proc.h": "c",
         "x86.h": "c",
-        "mmu.h": "c"
+        "mmu.h": "c",
+        "param.h": "c"
     }
 }
