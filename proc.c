@@ -244,7 +244,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
 
   // Allocate process.
   if((np = allocproc()) == 0){
-    // cprintf("failed in alloc\n");
+    cprintf("failed in alloc\n");
     return -1;
   }
 
@@ -257,7 +257,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
     kfree(np->kstack);
     np->kstack = 0;
     np->state = UNUSED;
-    // cprintf("failed in kalloc\n");
+    cprintf("failed in kalloc\n");
     return -1;
   }
   memset(tfpage, 0, PGSIZE);
@@ -283,7 +283,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
     kfree(np->kstack); // free allocproc's original stack if still present
     np->kstack = 0;
     np->state = UNUSED;
-    // cprintf("failed in mappages\n");
+    cprintf("failed in mappages\n");
     return -1;
   }
 
@@ -313,12 +313,12 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
 
   //Copy these two values from kernel to the user stack
   if(copyout(np->pgdir, sp, ustack, 8) < 0) {
-    kfree(tfpage);
+    // kfree(tfpage);
     // cleanup allocproc (release np) as in your allocproc failure path
-    kfree(np->kstack); // free allocproc's original stack if still present
-    np->kstack = 0;
-    np->state = UNUSED;
-    // cprintf("failed in copyout\n");
+    //kfree(np->kstack); // free allocproc's original stack if still present
+    // np->kstack = 0;
+    // np->state = UNUSED;
+    cprintf("failed in copyout\n");
     return -1;
   }
 
@@ -455,7 +455,7 @@ join(void **stack)
       uint sp = (uint)stack + PGSIZE; // Top of the stack page
       // Returns the user stack pointer of the cloned process
       if(copyout(p->pgdir, sp, p->userstack, (uint)sizeof(p->userstack)) < 0){
-        // cprintf("failed in join copyout\n");
+        cprintf("failed in join copyout\n");
         release(&ptable.lock);
         return -1;
       }
@@ -489,7 +489,7 @@ join(void **stack)
 
     // No point waiting if we don't have any children.
     if(!havekids || curproc->killed){
-      // cprintf("no kids or killed\n");
+      cprintf("no kids or killed\n");
       release(&ptable.lock);
       return -1;
     }
