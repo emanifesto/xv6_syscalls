@@ -134,19 +134,3 @@ void lock_acquire(lock_t *lock){
 void lock_release(lock_t *lock){
   lock->turn++;
 }
-
-void *
-malloc(uint n)
-{
-  int sz = (n + 3) & ~3;
-  void *p = (void*)sbrk(sz);
-  if ((int)p < 0)
-    return 0;
-  return p;
-}
-
-void
-free(void *ptr)
-{
-  (void)ptr; // simple no-op free for now
-}

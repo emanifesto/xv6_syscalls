@@ -170,6 +170,9 @@ void            uartinit(void);
 void            uartintr(void);
 void            uartputc(int);
 
+// umalloc.c
+void*          malloc(uint);
+
 // vm.c
 void            seginit(void);
 int             mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm);
