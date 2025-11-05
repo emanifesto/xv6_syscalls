@@ -117,7 +117,7 @@ int thread_create(void (*start_routine)(void *), void *arg1){
 }
 
 int thread_join(void){
-  void *stack;
+  void *stack = malloc(PGSIZE);
   return join(&stack);
 }
 
