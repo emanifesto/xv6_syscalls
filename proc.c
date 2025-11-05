@@ -303,7 +303,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
   np->tf->eip = (uint)fcn;
 
   uint ustack[2];
-  uint sp = (uint)stack + PGSIZE; // Top of the stack page
+  uint sp = (uint)stack; // Top of the stack page
 
   sp -= 4;  // Decrement stack pointer for the argument
   ustack[1] = (uint)arg1;  //The argument for fcn
@@ -452,7 +452,7 @@ join(void **stack)
         continue;
       havekids = 1;
 
-      uint sp = (uint)stack + PGSIZE; // Top of the stack page
+      uint sp = (uint)stack; // Top of the stack page
       // Returns the user stack pointer of the cloned process
       if(copyout(p->pgdir, sp, p->userstack, (uint)sizeof(p->userstack)) < 0){
         cprintf("failed in join copyout\n");
