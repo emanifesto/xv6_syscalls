@@ -37,7 +37,7 @@ struct context {
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 // system calls
-int clone(void(*fcn)(void *), void *arg1, void *stack);
+int clone(void(*fcn)(void *), void *arg1, uint *stack);
 int join(void **stack);
 
 // Per-process state
