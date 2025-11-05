@@ -312,7 +312,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
   ustack[0] = 0xffffffff;
 
   //Copy these two values from kernel to the user stack
-  int x = copyout(np->pgdir, sp, ustack, sizsof(ustack));
+  int x = copyout(np->pgdir, sp, ustack, sizeof(ustack));
   cprintf("copyout resulted in %d\n", x);
   if(x < 0) {
     // kfree(tfpage);
