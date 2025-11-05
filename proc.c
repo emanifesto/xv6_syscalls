@@ -303,7 +303,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
   np->tf->eip = (uint)fcn;
 
   uint ustack[2];
-  uint sp = (uint)stack; // Top of the stack page
+  uint sp = (uint)stack + PGSIZE; // Top of the stack page
 
   sp -= 4;  // Decrement stack pointer for the argument
   ustack[1] = (uint)arg1;  //The argument for fcn
@@ -312,7 +312,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
   ustack[0] = 0xffffffff;
 
   //Copy these two values from kernel to the user stack
-  int x = copyout(np->pgdir, sp, ustack, 8);
+  int x = copyout(np->pgdir, sp, ustack, sizsof(ustack));
   cprintf("copyout resulted in %d\n", x);
   if(x < 0) {
     // kfree(tfpage);

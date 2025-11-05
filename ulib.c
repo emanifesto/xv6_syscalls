@@ -113,7 +113,7 @@ static inline uint fetch_and_add(volatile uint *addr, uint val){
 
 int thread_create(void (*start_routine)(void *), void *arg1){
   void *stack = malloc(PGSIZE);
-  return clone(start_routine, arg1, &stack);
+  return clone(start_routine, arg1, stack);
 }
 
 int thread_join(void){
