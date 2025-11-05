@@ -417,6 +417,7 @@ int
 join(void)
 {
   struct proc *p;
+  struct proc *p2;
   int havekids, pid;
   struct proc *curproc = myproc();
   
@@ -441,7 +442,18 @@ join(void)
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;
-        freevm(p->pgdir);
+
+        // Checks if any threads are still using the same page directory
+        // If not, free the page directory
+        int inUse = 0;
+        for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
+          if(p2 != p && p2->pgdir == p->pgdir && p2->state != UNUSED && p2->state != ZOMBIE){
+            inUse = 1;
+            break;
+          }
+        }
+        if (inUse == 0) freevm(p->pgdir);
+
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;
