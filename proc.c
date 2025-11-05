@@ -312,7 +312,9 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
   ustack[0] = 0xffffffff;
 
   //Copy these two values from kernel to the user stack
-  if(copyout(np->pgdir, sp, ustack, 8) < 0) {
+  int x = copyout(np->pgdir, sp, ustack, 8);
+  cprintf("copyout resulted in %d\n", x);
+  if(x < 0) {
     // kfree(tfpage);
     // cleanup allocproc (release np) as in your allocproc failure path
     //kfree(np->kstack); // free allocproc's original stack if still present
