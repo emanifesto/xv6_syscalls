@@ -3,7 +3,7 @@ struct rtcdate;
 typedef struct __lock_t{
     volatile uint ticket;
     volatile uint turn
-}lock_t;
+};
 
 // system calls
 int clone(void(*fcn)(void *), void *arg1, void *stack);
