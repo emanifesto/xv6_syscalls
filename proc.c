@@ -236,7 +236,7 @@ fork(void)
 // Sets up instruction pointer and fake return address for function.
 // Caller must set state of returned proc to RUNNABLE.
 int
-clone(void(*fcn) (void *), void *arg1, void *stack)
+clone(void(*fcn) (void *), void *arg1, uint *stack)
 {
   int i, pid;
   struct proc *np;
