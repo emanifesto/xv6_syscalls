@@ -15,6 +15,7 @@ main(void)
 
   t = thread_create(child, 0);
   if(t < 0){
+    printf(1, "tid is %d\n", t);
     printf(1, "thread_create failed\n");
     exit();
   }

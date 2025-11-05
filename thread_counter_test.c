@@ -32,6 +32,7 @@ main(void)
   for(i = 0; i < NTHREADS; i++){
     tid = thread_create(worker, (void*)(uint)i);
     if(tid < 0){
+      printf(1, "tid is %d\n", tid);
       printf(1, "thread_create failed\n");
       exit();
     }
