@@ -123,5 +123,5 @@ void lock_acquire(lock_t *lock){
 }
 
 void lock_release(lock_t *lock){
-  fetch_and_add(&lock->turn ,1);
+  fetch_and_add(&lock->turn, 1);
 }
