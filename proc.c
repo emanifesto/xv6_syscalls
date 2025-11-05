@@ -244,6 +244,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
 
   // Allocate process.
   if((np = allocproc()) == 0){
+    cprinft("failed in alloc\n");
     return -1;
   }
 
@@ -256,6 +257,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
     kfree(np->kstack);
     np->kstack = 0;
     np->state = UNUSED;
+    cprintf("failed in kalloc\n");
     return -1;
   }
   memset(tfpage, 0, PGSIZE);
@@ -281,6 +283,7 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
     kfree(np->kstack); // free allocproc's original stack if still present
     np->kstack = 0;
     np->state = UNUSED;
+    cprintf("failed in mappages\n");
     return -1;
   }
 
@@ -309,7 +312,15 @@ clone(void(*fcn) (void *), void *arg1, void *stack)
   ustack[0] = 0xffffffff;
 
   //Copy these two values from kernel to the user stack
-  if(copyout(np->pgdir, sp, ustack, 8) < 0) return -1;
+  if(copyout(np->pgdir, sp, ustack, 8) < 0) {
+    kfree(tfpage);
+    // cleanup allocproc (release np) as in your allocproc failure path
+    kfree(np->kstack); // free allocproc's original stack if still present
+    np->kstack = 0;
+    np->state = UNUSED;
+    cprintf("failed in copyout\n");
+    return -1;
+  }
 
   // Set the new thread's stack pointer
   np->tf->esp = sp;
@@ -444,6 +455,7 @@ join(void **stack)
       uint sp = (uint)stack + PGSIZE; // Top of the stack page
       // Returns the user stack pointer of the cloned process
       if(copyout(p->pgdir, sp, p->userstack, (uint)sizeof(p->userstack)) < 0){
+        cprintf("failed in copyout\n");
         release(&ptable.lock);
         return -1;
       }
@@ -477,6 +489,7 @@ join(void **stack)
 
     // No point waiting if we don't have any children.
     if(!havekids || curproc->killed){
+      cprintf("no kids or killed\n");
       release(&ptable.lock);
       return -1;
     }
