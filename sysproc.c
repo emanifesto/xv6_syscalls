@@ -91,7 +91,7 @@ sys_uptime(void)
 }
 
 int
-sys_clone(void(*fcn)(void *), void *arg1, uint *stack)
+sys_clone(void(*fcn)(void *), void *arg1, void *stack)
 {
   return clone(fcn, arg1, stack);
 }
