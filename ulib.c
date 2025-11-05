@@ -4,6 +4,7 @@
 #include "user.h"
 #include "x86.h"
 #include "mmu.h"
+#include "proc.h"
 
 char*
 strcpy(char *s, const char *t)
